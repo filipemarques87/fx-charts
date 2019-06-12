@@ -2,15 +2,10 @@
 A python utility to build Renko bricks.
 
 There are two ways to build the bricks:
-| Type  | Description  |
-| ------------ | ------------ |
-|  fixed | The Renko bricks are build as a fixed amount, this is, for each 5$ of increase or decrease in the price a new brick is built |
-| percentage  |  The Renko bricks are build based on a percentage, this is, if this parameter is set to 0.02 (2%) and the price increase (or decrease) 2%, a new brick is built |
-
-| Command | Description |
+| Type | Description |
 | --- | --- |
-| git status | List all new or modified files |
-| git diff | Show file differences that haven't been staged |
+| fixed | The Renko bricks are build as a fixed amount, this is, for each 5$ of increase or decrease in the price a new brick is built |
+| percentage | The Renko bricks are build based on a percentage, this is, if this parameter is set to 0.02 (2%) and the price increase (or decrease) 2%, a new brick is built |
 
 
 # Usage
