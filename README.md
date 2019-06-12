@@ -2,6 +2,8 @@
 
 A python utility to build Renko bricks.
 
+![Pipeline](sample.png)
+
 There are two ways to build the bricks:
 
 | Type | Description |
