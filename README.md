@@ -28,7 +28,7 @@ bricks_percentage = renko(ohlc["close"], percentage=0.02)
 ```
 # Heikin Ashi candlesticks
 
-![Pipeline](sample_renko.png)
+![Pipeline](sample_ha.png)
 
 This functions returns an dict with open, high, low and close prices for Heikin Ashi indicator.
 
