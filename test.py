@@ -18,6 +18,7 @@ def _plot_renko(ax, bricks):
     ymin = min(np.absolute(bricks)) - 20
     width = 1.0 / len(bricks)
 
+    prev_height = 0
     for index, brick in enumerate(bricks):
         if brick > 0:
             facecolor = 'green'
@@ -27,9 +28,12 @@ def _plot_renko(ax, bricks):
         ypos = (abs(brick) - ymin) / (ymax - ymin)
         if index == len(bricks)-1:
             pass
+        elif bricks[index] == bricks[index+1]:
+            height = prev_height
         else:
             aux1 = (abs(bricks[index+1]) - ymin) / (ymax - ymin)
             height = abs(aux1 - ypos)
+            prev_height = height
 
         rect = Rectangle((index * width, ypos), width, height,
                          facecolor=facecolor, alpha=0.5)
@@ -66,6 +70,7 @@ if __name__ == "__main__":
     fig1 = plt.figure()
     # plot candlesticks chart
     ax1 = plt.subplot(3, 1, 1)
+    ax1.margins(0) 
     candlestick_ohlc(ax1, ohlc.values, width=0.4,
                      colorup='#77d879', colordown='#db3f3f')
 
@@ -75,7 +80,7 @@ if __name__ == "__main__":
 
     ax3 = plt.subplot(3, 1, 3)
     _plot_renko(ax3, bricks_percentage)
-
+    
     # HEIKIN ASHI CHART
     fig2 = plt.figure()
     # plot candlesticks chart
@@ -94,6 +99,7 @@ if __name__ == "__main__":
     candlestick_ohlc(ax2, ha_cs, width=0.4,
                      colorup='#77d879', colordown='#db3f3f')
 
+    
     plt.show()
-    fig1.savefig("sample_renko.png",  dpi=fig1.dpi)
-    fig2.savefig("sample_ha.png",  dpi=fig2.dpi)
+    # fig1.savefig("sample_renko.png",  dpi=fig1.dpi)
+    # fig2.savefig("sample_ha.png",  dpi=fig2.dpi)

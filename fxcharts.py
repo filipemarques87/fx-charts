@@ -19,21 +19,27 @@ def renko(ds, **kwargs):
 
     if not hasattr(ds, "__iter__"):
         raise Exception("Not iterable object")
+    
+    condensed = True
+    if "condensed" in kwargs:
+        condensed = kwargs["condensed"]
 
     if "fixed" in kwargs:
-        return _renko_step(ds, kwargs["fixed"])
+        return _renko_step(ds, kwargs["fixed"], condensed)
     elif "percentage" in kwargs:
-        return _renko_percentage(ds, kwargs["percentage"])
+        return _renko_percentage(ds, kwargs["percentage"], condensed)
 
     raise ValueError("Not recognized method")
 
 
-def _renko_step(ds, step):
-    chart = []
+def _renko_step(ds, step, condensed):
     last_price = ds[0]
+    chart = [last_price]
     for price in ds:
         bricks = math.floor(abs(price-last_price)/step)
         if bricks == 0:
+            if condensed:
+                chart.append(chart[-1])
             continue
 
         sign = int(np.sign(price-last_price))
@@ -42,12 +48,14 @@ def _renko_step(ds, step):
     return chart
 
 
-def _renko_percentage(ds, percentage):
-    chart = []
+def _renko_percentage(ds, percentage, condensed):
     last_price = ds[0]
+    chart = [last_price]
     for price in ds:
         inc = (price-last_price)/last_price
         if abs(inc) < percentage:
+            if condensed:
+                chart.append(chart[-1])
             continue
 
         sign = int(np.sign(price-last_price))
