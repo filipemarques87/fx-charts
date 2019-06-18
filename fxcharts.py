@@ -101,12 +101,9 @@ def ha_candlesticks(ohlc):
         ha_h.append(max([h[i], ha_o[i], ha_c[i]]))
         ha_l.append(min([l[i], ha_o[i], ha_c[i]]))
 
-    ha_o[0] = np.nan
-    ha_c[0] = np.nan
-
     return {
-        "open": ha_o,
-        "high": ha_h,
-        "low": ha_l,
-        "close": ha_c
+        "open": ha_o[1:],
+        "high": ha_h[1:],
+        "low": ha_l[1:],
+        "close": ha_c[1:]
     }
