@@ -61,43 +61,49 @@ if __name__ == "__main__":
     bricks_fixed = renko(ohlc["close"], fixed=5)
 
     # renko with based on percentage
-    bricks_percentage = renko(ohlc["close"], percentage=0.02)
+    bricks_percentage = renko(ohlc["close"], percentage=0.02, condensed=False)
 
-    # compute the haiken ashi bars
-    ha_bars = ha_candlesticks(ohlc)
+    # renko with based on atr
+    bricks_atr = renko(ohlc, atr=30, condensed=False)
+
+    # # compute the haiken ashi bars
+    # ha_bars = ha_candlesticks(ohlc)
 
     # RENKO CHART
     fig1 = plt.figure()
     # plot candlesticks chart
-    ax1 = plt.subplot(3, 1, 1)
+    ax1 = plt.subplot(4, 1, 1)
     ax1.margins(0) 
     candlestick_ohlc(ax1, ohlc.values, width=0.4,
                      colorup='#77d879', colordown='#db3f3f')
 
     # plot renko charts
-    ax2 = plt.subplot(3, 1, 2)
+    ax2 = plt.subplot(4, 1, 2)
     _plot_renko(ax2, bricks_fixed)
 
-    ax3 = plt.subplot(3, 1, 3)
+    ax3 = plt.subplot(4, 1, 3)
     _plot_renko(ax3, bricks_percentage)
+
+    ax4 = plt.subplot(4, 1, 4)
+    _plot_renko(ax4, bricks_atr)
     
     # HEIKIN ASHI CHART
-    fig2 = plt.figure()
-    # plot candlesticks chart
-    ax1 = plt.subplot(2, 1, 1)
-    candlestick_ohlc(ax1, ohlc.values, width=0.4,
-                     colorup='#77d879', colordown='#db3f3f')
+    # fig2 = plt.figure()
+    # # plot candlesticks chart
+    # ax1 = plt.subplot(2, 1, 1)
+    # candlestick_ohlc(ax1, ohlc.values, width=0.4,
+    #                  colorup='#77d879', colordown='#db3f3f')
 
-    # plot heikei ashi chart
-    # data must be in format: (t, open, high, low, close), ...
-    ha_cs = []
-    for i in range(len(ha_bars["open"])):
-        ha_cs.append((ohlc["date"][i], ha_bars["open"][i],
-                      ha_bars["high"][i], ha_bars["low"][i], ha_bars["close"][i]))
+    # # plot heikei ashi chart
+    # # data must be in format: (t, open, high, low, close), ...
+    # ha_cs = []
+    # for i in range(len(ha_bars["open"])):
+    #     ha_cs.append((ohlc["date"][i], ha_bars["open"][i],
+    #                   ha_bars["high"][i], ha_bars["low"][i], ha_bars["close"][i]))
 
-    ax2 = plt.subplot(2, 1, 2)
-    candlestick_ohlc(ax2, ha_cs, width=0.4,
-                     colorup='#77d879', colordown='#db3f3f')
+    # ax2 = plt.subplot(2, 1, 2)
+    # candlestick_ohlc(ax2, ha_cs, width=0.4,
+    #                  colorup='#77d879', colordown='#db3f3f')
 
     
     plt.show()
