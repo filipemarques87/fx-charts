@@ -6,7 +6,7 @@ A python utility to build Renko bricks and Heikin Ashi candlesticks.
 
 ![Pipeline](sample_renko.png)
 
-There are two ways to build the bricks:
+There are tree ways to build the bricks:
 
 | Type | Description |
 | --- | --- |
