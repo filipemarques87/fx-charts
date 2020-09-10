@@ -18,7 +18,10 @@ def renko(ds, **kwargs):
                 for each candlestick, otherwise only creates a brick if there
                 is a change in price grather than the brick step
 
-    Return: an array with renko levels. The levels can be negative or
+    Return: a dict with the date (not real date), open, high, low and close
+        prices arrays.
+
+    [OLD] Return: an array with renko levels. The levels can be negative or
         positive. A positive level indicates a green candle and the negative
         value indicates a red candle. The values are the bottom of the
         renko candles.
@@ -27,7 +30,7 @@ def renko(ds, **kwargs):
     if not hasattr(ds, "__iter__"):
         raise Exception("Not iterable object")
 
-    condensed = True
+    condensed = True  # change to false by default
     if "condensed" in kwargs:
         condensed = kwargs["condensed"]
 
@@ -47,14 +50,14 @@ def _renko_step(ds, step, condensed):
     for price in ds:
         bricks = math.floor(abs(price-last_price)/step)
         if bricks == 0:
-            if condensed:
-                chart.append(chart[-1])
+            # if condensed:
+            #     chart.append(chart[-1])
             continue
 
         sign = int(np.sign(price-last_price))
         chart += [sign*(last_price+(sign*step*x)) for x in range(1, bricks+1)]
         last_price = abs(chart[-1])
-    return chart
+    return _to_ohlc(chart)
 
 
 def _renko_percentage(ds, percentage, condensed):
@@ -63,8 +66,8 @@ def _renko_percentage(ds, percentage, condensed):
     for price in ds:
         inc = (price-last_price)/last_price
         if abs(inc) < percentage:
-            if condensed:
-                chart.append(chart[-1])
+            # if condensed:
+            #     chart.append(chart[-1])
             continue
 
         sign = int(np.sign(price-last_price))
@@ -73,7 +76,7 @@ def _renko_percentage(ds, percentage, condensed):
         chart += [sign*(last_price+(sign*step*x))
                   for x in range(1, abs(bricks)+1)]
         last_price = abs(chart[-1])
-    return chart
+    return _to_ohlc(chart)
 
 
 def _renko_atr(ohlc, atr_n, condensed):
@@ -95,8 +98,8 @@ def _renko_atr(ohlc, atr_n, condensed):
         price = ohlc["close"][i]
         bricks = math.floor(abs(price-last_price)/curr_atr)
         if bricks == 0:
-            if condensed:
-                chart.append(chart[-1])
+            # if condensed:
+            #     chart.append(chart[-1])
             continue
 
         sign = int(np.sign(price-last_price))
@@ -110,7 +113,49 @@ def _renko_atr(ohlc, atr_n, condensed):
         new_atr = max(curr_high, prev_close) - min(curr_low, prev_close)
         curr_atr = (curr_atr*(atr_n-1) + new_atr) / atr_n
 
-    return chart
+    return _to_ohlc(chart)
+
+
+def _to_ohlc(bricks):
+    # first candle
+    ohlc = {"date": [1],
+            "open": [abs(bricks[0])],
+            "high": [abs(max(bricks[0], bricks[1]))],
+            "low": [abs(min(bricks[0], bricks[1]))],
+            "close": [abs(bricks[1])]}
+
+    for i in range(2, len(bricks)):
+        brick_size = abs(abs(bricks[i]) - abs(bricks[i-1]))
+        if bricks[i] > 0:  # green candle
+            if ohlc["open"][-1] > ohlc["close"][-1]:  # change from red to green
+                open_price = ohlc["open"][-1]
+                ohlc["open"].append(open_price)
+                ohlc["close"].append(open_price + brick_size)
+            elif ohlc["open"][-1] < ohlc["close"][-1]:  # keep green
+                close_price = ohlc["close"][-1]
+                ohlc["open"].append(close_price)
+                ohlc["close"].append(close_price + brick_size)
+            else: # should never happen
+                ohlc["open"].append(ohlc["open"][-1])
+                ohlc["close"].append(ohlc["close"][-1])
+        else:  # red candle
+            if ohlc["open"][-1] < ohlc["close"][-1]:  # change from green to red
+                open_price = ohlc["open"][-1]
+                ohlc["open"].append(open_price)
+                ohlc["close"].append(open_price - brick_size)
+            elif ohlc["open"][-1] > ohlc["close"][-1]:  # keep red
+                close_price = ohlc["close"][-1]
+                ohlc["open"].append(close_price)
+                ohlc["close"].append(close_price - brick_size)
+            else: # should never happen
+                ohlc["open"].append(ohlc["open"][-1])
+                ohlc["close"].append(ohlc["close"][-1])
+
+        ohlc["high"].append(max(ohlc["open"][-1], ohlc["close"][-1]))
+        ohlc["low"].append(min(ohlc["open"][-1], ohlc["close"][-1]))
+        ohlc["date"].append(ohlc["date"][-1] + 1)
+
+    return ohlc
 
 
 def ha_candlesticks(ohlc):
@@ -121,7 +166,7 @@ def ha_candlesticks(ohlc):
         ohlc: a pandas dataframe or dict of arryas containing the values
             of open, high, low and close
 
-    Return: a dict with the open, high, low and close arrays for
+    Return: a dict with the open, high, low and close prices arrays for
         Heikin-Ashi candlesticks
     """
 

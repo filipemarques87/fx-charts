@@ -41,6 +41,29 @@ def _plot_renko(ax, bricks):
     pass
 
 
+def _plot_renko2(ax, ohlc):
+    width = 1
+    width2 = 0.1
+    pricesup = ohlc[ohlc.close >= ohlc.open]
+    pricesdown = ohlc[ohlc.close < ohlc.open]
+
+    ax.bar(pricesup.index, pricesup.close-pricesup.open,
+           width, bottom=pricesup.open, color='g')
+    ax.bar(pricesup.index, pricesup.high-pricesup.close,
+           width2, bottom=pricesup.close, color='g')
+    ax.bar(pricesup.index, pricesup.low-pricesup.open,
+           width2, bottom=pricesup.open, color='g')
+
+    ax.bar(pricesdown.index, pricesdown.close-pricesdown.open,
+           width, bottom=pricesdown.open, color='r')
+    ax.bar(pricesdown.index, pricesdown.high-pricesdown.open,
+           width2, bottom=pricesdown.open, color='r')
+    ax.bar(pricesdown.index, pricesdown.low-pricesdown.close,
+           width2, bottom=pricesdown.close, color='r')
+
+    # ax.grid()
+
+
 if __name__ == "__main__":
     ohlc = pd.read_csv(
         "data.csv",
@@ -73,20 +96,29 @@ if __name__ == "__main__":
     fig1 = plt.figure()
     # plot candlesticks chart
     ax1 = plt.subplot(4, 1, 1)
-    ax1.margins(0) 
+    ax1.margins(0)
     candlestick_ohlc(ax1, ohlc.values, width=0.4,
                      colorup='#77d879', colordown='#db3f3f')
 
     # plot renko charts
     ax2 = plt.subplot(4, 1, 2)
-    _plot_renko(ax2, bricks_fixed)
+    pd_fixed = pd.DataFrame.from_dict(bricks_fixed)
+    _plot_renko2(ax2, pd_fixed)
+    # candlestick_ohlc(ax2, pd_fixed.values, width=0.4,
+    #                  colorup='#77d879', colordown='#db3f3f')
 
     ax3 = plt.subplot(4, 1, 3)
-    _plot_renko(ax3, bricks_percentage)
+    pd_percentage = pd.DataFrame.from_dict(bricks_percentage)
+    _plot_renko2(ax3, pd_percentage)
+    # candlestick_ohlc(ax3, pd_percentage.values, width=0.4,
+    #                  colorup='#77d879', colordown='#db3f3f')
 
     ax4 = plt.subplot(4, 1, 4)
-    _plot_renko(ax4, bricks_atr)
-    
+    pd_atr = pd.DataFrame.from_dict(bricks_atr)
+    _plot_renko2(ax4, pd_atr)
+    # candlestick_ohlc(ax4, pd_atr.values, width=0.4,
+    #                  colorup='#77d879', colordown='#db3f3f')
+
     # HEIKIN ASHI CHART
     # fig2 = plt.figure()
     # # plot candlesticks chart
